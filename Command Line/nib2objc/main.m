@@ -16,14 +16,15 @@ int main (int argc, const char * argv[])
     @autoreleasepool {
         
         // Verify that we have the required number of parameters in the command line
-        if (argc < 2)
-        {
-            printf("This utility requires a valid NIB file path as parameter.\n");
-            return 0;
-        }
+//        if (argc < 2)
+//        {
+//            printf("This utility requires a valid NIB file path as parameter.\n");
+//            return 0;
+//        }
         
         // Test that the input file exists, and that it is not a directory
-        NSString *nibFile = [NSString stringWithCString:argv[1] encoding:NSUTF8StringEncoding];
+//        NSString *nibFile = [NSString stringWithCString:argv[1] encoding:NSUTF8StringEncoding];
+        NSString *nibFile = @"/Users/dokay/Desktop/nib2objc/Sample/WccIconOneTextCell.xib";
         NSFileManager *manager = [NSFileManager defaultManager];
         BOOL isDirectory = NO;
         BOOL fileExists = [manager fileExistsAtPath:nibFile isDirectory:&isDirectory];

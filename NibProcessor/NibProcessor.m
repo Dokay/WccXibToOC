@@ -223,16 +223,17 @@
     {
         for (NSDictionary *subitem in children)
         {
-            int subview = [[subitem objectForKey:@"object-id"] intValue];
+            id subview = [subitem objectForKey:@"object-id"];
+            id superView = [dict objectForKey:@"object-id"];
 
-            id currentViewObject = [objects objectForKey:[NSString stringWithFormat:@"%d", currentView]];
+            id currentViewObject = [objects objectForKey:superView];
             NSString *instanceName = [self instanceNameForObject:currentViewObject];
             
-            id subViewObject = [objects objectForKey:[NSString stringWithFormat:@"%d", subview]];
+            id subViewObject = [objects objectForKey:[NSString stringWithFormat:@"%@", subview]];
             NSString *subInstanceName = [self instanceNameForObject:subViewObject];
             
             [self parseChildren:subitem ofCurrentView:subview withObjects:objects];
-            [_output appendFormat:@"[%@%d addSubview:%@%d];\n", instanceName, currentView, subInstanceName, subview];
+            [_output appendFormat:@"[%@%d addSubview:%@%@];\n", instanceName, currentView, subInstanceName, subview];
         }
     }
 }

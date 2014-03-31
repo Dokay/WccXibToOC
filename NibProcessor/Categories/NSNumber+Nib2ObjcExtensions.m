@@ -281,10 +281,19 @@
 
 - (NSString *)tableViewCellSelectionStyleString
 {
+//    typedef NS_ENUM(NSInteger, UITableViewCellSelectionStyle) {
+//        UITableViewCellSelectionStyleNone,
+//        UITableViewCellSelectionStyleBlue,
+//        UITableViewCellSelectionStyleGray,
+//        UITableViewCellSelectionStyleDefault NS_ENUM_AVAILABLE_IOS(7_0)
+//    };
     NSArray *values = [NSArray arrayWithObjects:@"UITableViewCellSelectionStyleNone",
                        @"UITableViewCellSelectionStyleBlue",
-                       @"UITableViewCellSelectionStyleGray", nil];
-    return [values objectAtIndex:[self intValue]];
+                       @"UITableViewCellSelectionStyleGray",
+                       @"UITableViewCellSelectionStyleDefault",nil];
+    NSInteger i = [self intValue];
+    
+    return [values objectAtIndex:i];
 }
 
 - (NSString *)datePickerModeString

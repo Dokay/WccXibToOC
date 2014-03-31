@@ -55,6 +55,7 @@
 		3A1CCF7814684EFA00E639D4 /* UIViewControllerProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A1CCF4814684EFA00E639D4 /* UIViewControllerProcessor.m */; };
 		3A1CCF7914684EFA00E639D4 /* UIViewProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A1CCF4A14684EFA00E639D4 /* UIViewProcessor.m */; };
 		3A1CCF7A14684EFA00E639D4 /* UIWebViewProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A1CCF4C14684EFA00E639D4 /* UIWebViewProcessor.m */; };
+		6BACFB0118E94911002A61BC /* IBUITableViewCellContentViewProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BACFB0018E94911002A61BC /* IBUITableViewCellContentViewProcessor.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -166,6 +167,8 @@
 		3A1CCF4A14684EFA00E639D4 /* UIViewProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewProcessor.m; sourceTree = "<group>"; };
 		3A1CCF4B14684EFA00E639D4 /* UIWebViewProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebViewProcessor.h; sourceTree = "<group>"; };
 		3A1CCF4C14684EFA00E639D4 /* UIWebViewProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIWebViewProcessor.m; sourceTree = "<group>"; };
+		6BACFAFF18E94911002A61BC /* IBUITableViewCellContentViewProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IBUITableViewCellContentViewProcessor.h; sourceTree = "<group>"; };
+		6BACFB0018E94911002A61BC /* IBUITableViewCellContentViewProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IBUITableViewCellContentViewProcessor.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -335,6 +338,8 @@
 				3A1CCF4A14684EFA00E639D4 /* UIViewProcessor.m */,
 				3A1CCF4B14684EFA00E639D4 /* UIWebViewProcessor.h */,
 				3A1CCF4C14684EFA00E639D4 /* UIWebViewProcessor.m */,
+				6BACFAFF18E94911002A61BC /* IBUITableViewCellContentViewProcessor.h */,
+				6BACFB0018E94911002A61BC /* IBUITableViewCellContentViewProcessor.m */,
 			);
 			path = Processors;
 			sourceTree = "<group>";
@@ -400,6 +405,7 @@
 				3A1CCF5414684EFA00E639D4 /* Processor.m in Sources */,
 				3A1CCF5514684EFA00E639D4 /* ProxyObjectProcessor.m in Sources */,
 				3A1CCF5614684EFA00E639D4 /* UIActivityIndicatorViewProcessor.m in Sources */,
+				6BACFB0118E94911002A61BC /* IBUITableViewCellContentViewProcessor.m in Sources */,
 				3A1CCF5714684EFA00E639D4 /* UIBarButtonItemProcessor.m in Sources */,
 				3A1CCF5814684EFA00E639D4 /* UIBarItemProcessor.m in Sources */,
 				3A1CCF5914684EFA00E639D4 /* UIButtonProcessor.m in Sources */,
