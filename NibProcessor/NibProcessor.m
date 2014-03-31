@@ -230,8 +230,8 @@
     {
         for (NSDictionary *subitem in children)
         {
-            id subview = [subitem objectForKey:@"object-id"];
-            id superView = [dict objectForKey:@"object-id"];
+            NSString *subview = [subitem objectForKey:@"object-id"];
+            NSString *superView = [dict objectForKey:@"object-id"];
 
             id currentViewObject = [objects objectForKey:superView];
             NSString *instanceName = [self instanceNameForObject:currentViewObject];
@@ -240,8 +240,12 @@
             NSString *subInstanceName = [self instanceNameForObject:subViewObject];
             
             [self parseChildren:subitem ofCurrentView:subview withObjects:objects];
-            [_output appendFormat:@"[%@%d addSubview:%@%@];\n", instanceName, currentView, subInstanceName, [[subview stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString]];
-
+            
+            
+            NSString *currentViewName = [[superView stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
+             NSString *subViewName = [[subview stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
+            
+            [_output appendFormat:@"[%@%@ addSubview:%@%@];\n", instanceName, currentViewName, subInstanceName, subViewName];
         }
     }
 }

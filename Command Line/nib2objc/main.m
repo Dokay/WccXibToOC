@@ -24,7 +24,7 @@ int main (int argc, const char * argv[])
         
         // Test that the input file exists, and that it is not a directory
 //        NSString *nibFile = [NSString stringWithCString:argv[1] encoding:NSUTF8StringEncoding];
-        NSString *nibFile = @"/Users/dokay/Desktop/nib2objc/Sample/WccIconOneTextCell.xib";
+        NSString *nibFile = @"/Users/dokay/Desktop/nib2objc/Sample/SoftwareSectionGridView.xib";
         NSFileManager *manager = [NSFileManager defaultManager];
         BOOL isDirectory = NO;
         BOOL fileExists = [manager fileExistsAtPath:nibFile isDirectory:&isDirectory];

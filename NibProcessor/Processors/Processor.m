@@ -103,7 +103,7 @@
     else if ([klass isEqualToString:@"IBGLKViewController"]) processor = [[GLKViewControllerProcessor alloc] init];
     else if ([klass isEqualToString:@"IBUITapGestureRecognizer"]) processor = [[UITapGestureRecognizerProcessor alloc] init];
     else if ([klass isEqualToString:@"IBGLKView"]) processor = [[GLKViewProcessor alloc] init];
-    else if ([klass isEqualToString:@"IBProxyObject"]) processor = [[ProxyObjectProcessor alloc] init];
+//    else if ([klass isEqualToString:@"IBProxyObject"]) processor = [[ProxyObjectProcessor alloc] init];
     else if ([klass isEqualToString:@"IBUITableViewCellContentView"]) processor = [[IBUITableViewCellContentViewProcessor alloc] init];
     else{
 //        processor = [[UIViewProcessor alloc] init];
