@@ -13,13 +13,16 @@
 @interface NibProcessor ()
 
 - (void)getDictionaryFromNIB;
-- (void)parseChildren:(NSDictionary *)dict ofCurrentView:(int)currentView withObjects:(NSDictionary *)objects;
-- (NSString *)instanceNameForObject:(id)obj;
+- (void)parseChildren:(NSDictionary *)dict withObjects:(NSDictionary *)objects;
+- (NSString *)instanceNameForObject:(id)obj :(NSString *)ID;
 
 @end
 
 
 @implementation NibProcessor
+{
+    NSArray *arrOutLetName;
+}
 
 @dynamic input;
 @synthesize output = _output;
@@ -57,6 +60,8 @@
     _filename = nil;
     _filename = [newFilename copy];
     [self getDictionaryFromNIB];
+    
+    [self getOutLetFromNIB];
 }
 
 - (NSString *)inputAsText
@@ -78,6 +83,35 @@
 
 #pragma mark -
 #pragma mark Private methods
+
+- (void)getOutLetFromNIB
+{
+//    echo "$(grep .png ./ddd.txt)" > ddd.txt
+    
+    NSArray *arguments = [NSArray arrayWithObjects: @"<outlet",
+                          _filename, nil];
+    NSTask *task = [[NSTask alloc] init];
+    NSPipe *pipe = [NSPipe pipe];
+    NSFileHandle *readHandle = [pipe fileHandleForReading];
+    NSData *temp = nil;
+    
+    NSMutableData *tempData = [[NSMutableData alloc]init];
+    
+    [task setLaunchPath:@"/usr/bin/grep"];
+    [task setArguments:arguments];
+    [task setStandardOutput:pipe];
+    [task launch];
+    
+    while ((temp = [readHandle availableData]) && [temp length])
+    {
+        [tempData appendData:temp];
+    }
+    NSString *strOutLetResult = [[NSString alloc] initWithData:tempData encoding:NSASCIIStringEncoding];
+    arrOutLetName =  [strOutLetResult componentsSeparatedByString:@"outlet"];
+    
+    [task release];
+
+}
 
 - (void)getDictionaryFromNIB
 {
@@ -160,7 +194,7 @@
             }
         }
         
-        NSString *instanceName = [self instanceNameForObject:object];
+        NSString *instanceName = [self instanceNameForObject:object :identifier];
         // Then, output the constructor
         NSString *custom_klass = [object objectForKey:@"custom-class"];
         NSString *klass = [object objectForKey:@"class"];
@@ -215,52 +249,58 @@
     NSArray *nibHierarchy = [_dictionary objectForKey:@"com.apple.ibtool.document.hierarchy"];
     for (NSDictionary *item in nibHierarchy)
     {
-        int currentView = [[item objectForKey:@"object-id"] intValue];
-        [self parseChildren:item ofCurrentView:currentView withObjects:objects];
+//        int currentView = [[item objectForKey:@"object-id"] intValue];
+        [self parseChildren:item withObjects:objects];
     }
     
     [objects release];
     objects = nil;
 }
 
-- (void)parseChildren:(NSDictionary *)dict ofCurrentView:(int)currentView withObjects:(NSDictionary *)objects
+- (void)parseChildren:(NSDictionary *)dict withObjects:(NSDictionary *)objects
 {
     NSArray *children = [dict objectForKey:@"children"];
     if (children != nil)
     {
         for (NSDictionary *subitem in children)
         {
-            NSString *subview = [subitem objectForKey:@"object-id"];
-            NSString *superView = [dict objectForKey:@"object-id"];
+            NSString *subviewID = [subitem objectForKey:@"object-id"];
+            NSString *superViewID = [dict objectForKey:@"object-id"];
 
-            id currentViewObject = [objects objectForKey:superView];
-            NSString *instanceName = [self instanceNameForObject:currentViewObject];
+            id currentViewObject = [objects objectForKey:superViewID];
+            NSString *instanceName = [self instanceNameForObject:currentViewObject :superViewID];
             
-            id subViewObject = [objects objectForKey:[NSString stringWithFormat:@"%@", subview]];
-            NSString *subInstanceName = [self instanceNameForObject:subViewObject];
+            id subViewObject = [objects objectForKey:[NSString stringWithFormat:@"%@", subviewID]];
+            NSString *subInstanceName = [self instanceNameForObject:subViewObject :subviewID];
             
-            [self parseChildren:subitem ofCurrentView:subview withObjects:objects];
+            [self parseChildren:subitem withObjects:objects];
             
-            
-            NSString *currentViewName = [[superView stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
-             NSString *subViewName = [[subview stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
-            
-            [_output appendFormat:@"[%@%@ addSubview:%@%@];\n", instanceName, currentViewName, subInstanceName, subViewName];
+            [_output appendFormat:@"[%@ addSubview:%@];\n", instanceName, subInstanceName];
         }
     }
 }
 
-- (NSString *)instanceNameForObject:(id)obj
+- (NSString *)instanceNameForObject:(id)obj :(NSString *)ID
 {
+//    if ([arrOutLetName count] > 0) {
+//        for (NSString *str_outlet in arrOutLetName) {
+//            if ([str_outlet hasPrefix:ID]) {
+//                NSRange begin = [str_outlet rangeOfString:@"property"];
+//            }
+//        }
+//    }
+    NSMutableString *instanceName = [[NSMutableString alloc]init];
     NSString *custom_kclass = [obj objectForKey:@"custom-class"];
     if ([custom_kclass length] > 0) {
-        NSString *instanceName = [[custom_kclass lowercaseString] substringFromIndex:0];
-        return instanceName;
+        [instanceName appendString:custom_kclass];
     }else{
         id klass = [obj objectForKey:@"class"];
-        NSString *instanceName = [[klass lowercaseString] substringFromIndex:2];
-        return instanceName;
+         [instanceName appendString:[klass substringFromIndex:2]];
     }
+    
+    [instanceName appendString:[[ID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString]];
+
+    return instanceName;
 }
 
 @end
