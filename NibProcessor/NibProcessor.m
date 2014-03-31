@@ -160,11 +160,18 @@
             }
         }
         
-        // Then, output the constructor
-        id klass = [object objectForKey:@"class"];
-        id constructor = [object objectForKey:@"constructor"];
         NSString *instanceName = [self instanceNameForObject:object];
-        [_output appendFormat:@"%@ *%@%@ = %@;\n", klass, instanceName, identifierKey, constructor];
+        // Then, output the constructor
+        NSString *custom_klass = [object objectForKey:@"custom-class"];
+        NSString *klass = [object objectForKey:@"class"];
+        NSString *constructor = [object objectForKey:@"constructor"];
+        if ([custom_klass length] > 0) {
+            constructor = [constructor stringByReplacingOccurrencesOfString:klass withString:custom_klass];
+            [_output appendFormat:@"%@ *%@%@ = %@;\n", custom_klass, instanceName, identifierKey, constructor];
+        }else{
+            [_output appendFormat:@"%@ *%@%@ = %@;\n", klass, instanceName, identifierKey, constructor];
+        }
+ 
                 
         // Then, output the properties only, ordered alphabetically
         orderedKeys = [[object allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
@@ -233,16 +240,23 @@
             NSString *subInstanceName = [self instanceNameForObject:subViewObject];
             
             [self parseChildren:subitem ofCurrentView:subview withObjects:objects];
-            [_output appendFormat:@"[%@%d addSubview:%@%@];\n", instanceName, currentView, subInstanceName, subview];
+            [_output appendFormat:@"[%@%d addSubview:%@%@];\n", instanceName, currentView, subInstanceName, [[subview stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString]];
+
         }
     }
 }
 
 - (NSString *)instanceNameForObject:(id)obj
 {
-    id klass = [obj objectForKey:@"class"];
-    NSString *instanceName = [[klass lowercaseString] substringFromIndex:2];
-    return instanceName;
+    NSString *custom_kclass = [obj objectForKey:@"custom-class"];
+    if ([custom_kclass length] > 0) {
+        NSString *instanceName = [[custom_kclass lowercaseString] substringFromIndex:0];
+        return instanceName;
+    }else{
+        id klass = [obj objectForKey:@"class"];
+        NSString *instanceName = [[klass lowercaseString] substringFromIndex:2];
+        return instanceName;
+    }
 }
 
 @end
