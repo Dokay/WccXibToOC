@@ -78,7 +78,7 @@
                                                                             format:&format
                                                                   errorDescription:&errorStr];
     [errorStr release];
-    return propertyList;    
+    return propertyList;
 }
 
 #pragma mark -
@@ -86,7 +86,7 @@
 
 - (void)getOutLetFromNIB
 {
-//    echo "$(grep .png ./ddd.txt)" > ddd.txt
+    //    echo "$(grep .png ./ddd.txt)" > ddd.txt
     
     NSArray *arguments = [NSArray arrayWithObjects: @"<outlet",
                           _filename, nil];
@@ -110,19 +110,19 @@
     arrOutLetName =  [strOutLetResult componentsSeparatedByString:@"outlet"];
     
     [task release];
-
+    
 }
 
 - (void)getDictionaryFromNIB
 {
     // Build the NSTask that will run the ibtool utility
-    NSArray *arguments = [NSArray arrayWithObjects:_filename, @"--objects", 
+    NSArray *arguments = [NSArray arrayWithObjects:_filename, @"--objects",
                           @"--hierarchy", @"--connections", @"--classes", nil];
     NSTask *task = [[NSTask alloc] init];
     NSPipe *pipe = [NSPipe pipe];
     NSFileHandle *readHandle = [pipe fileHandleForReading];
     NSData *temp = nil;
-
+    
     [_data release];
     _data = [[NSMutableData alloc] init];
     
@@ -131,11 +131,11 @@
     [task setStandardOutput:pipe];
     [task launch];
     
-    while ((temp = [readHandle availableData]) && [temp length]) 
+    while ((temp = [readHandle availableData]) && [temp length])
     {
         [_data appendData:temp];
     }
-
+    
     // This dictionary is ready to be parsed, and it contains
     // everything we need from the NIB file.
     _dictionary = [[self inputAsDictionary] retain];
@@ -154,9 +154,9 @@
     {
         id object = [nibObjects objectForKey:key];
         NSString *klass = [object objectForKey:@"class"];
-
+        
         Processor *processor = [Processor processorForClass:klass];
-
+        
         if (processor == nil)
         {
 #ifdef CONFIGURATION_Debug
@@ -190,7 +190,7 @@
             if ([key hasPrefix:@"__helper__"])
             {
                 [_output appendString:value];
-                [_output appendString:@"\n"];    
+                [_output appendString:@"\n"];
             }
         }
         
@@ -199,31 +199,52 @@
         NSString *custom_klass = [object objectForKey:@"custom-class"];
         NSString *klass = [object objectForKey:@"class"];
         NSString *constructor = [object objectForKey:@"constructor"];
+        
+        //        if ([self hasOutletName:ID]) {
+        
         if ([custom_klass length] > 0) {
             constructor = [constructor stringByReplacingOccurrencesOfString:klass withString:custom_klass];
-            [_output appendFormat:@"%@ *%@%@ = %@;\n", custom_klass, instanceName, identifierKey, constructor];
+            if ([self hasOutletName:identifier]) {
+                [_output appendFormat:@"%@ *%@ = %@;\n", custom_klass, instanceName, constructor];
+            }else{
+                [_output appendFormat:@"%@ *%@%@ = %@;\n", custom_klass, instanceName, identifierKey, constructor];
+            }
+            
         }else{
-            [_output appendFormat:@"%@ *%@%@ = %@;\n", klass, instanceName, identifierKey, constructor];
+            if ([self hasOutletName:identifier]) {
+                [_output appendFormat:@"%@ *%@ = %@;\n", klass, instanceName, constructor];
+            }else{
+                [_output appendFormat:@"%@ *%@%@ = %@;\n", klass, instanceName, identifierKey, constructor];
+            }
         }
- 
-                
+        
+        
         // Then, output the properties only, ordered alphabetically
         orderedKeys = [[object allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
         for (NSString *key in orderedKeys)
         {
             id value = [object objectForKey:key];
-            if (![key hasPrefix:@"__method__"] 
+            if (![key hasPrefix:@"__method__"]
                 && ![key isEqualToString:@"constructor"] && ![key isEqualToString:@"class"]
                 && ![key hasPrefix:@"__helper__"])
             {
-                switch (self.codeStyle) 
+                switch (self.codeStyle)
                 {
                     case NibProcessorCodeStyleProperties:
-                        [_output appendFormat:@"%@%@.%@ = %@;\n", instanceName, identifierKey, key, value];
+                        if ([self hasOutletName:identifier]) {
+                            [_output appendFormat:@"%@.%@ = %@;\n", instanceName, key, value];
+                        }else{
+                            [_output appendFormat:@"%@%@.%@ = %@;\n", instanceName, identifierKey, key, value];
+                        }
                         break;
                         
                     case NibProcessorCodeStyleSetter:
-                        [_output appendFormat:@"[%@%@ set%@:%@];\n", instanceName, identifierKey, [key capitalize], value];
+                        
+                        if ([self hasOutletName:identifier]) {
+                            [_output appendFormat:@"[%@ set%@:%@];\n", instanceName, key, value];
+                        }else{
+                            [_output appendFormat:@"[%@%@ set%@:%@];\n", instanceName, identifierKey, key, value];
+                        }
                         break;
                         
                     default:
@@ -231,7 +252,7 @@
                 }
             }
         }
-
+        
         // Finally, output the method calls, ordered alphabetically
         orderedKeys = [object keysSortedByValueUsingSelector:@selector(caseInsensitiveCompare:)];
         for (NSString *key in orderedKeys)
@@ -242,14 +263,14 @@
                 [_output appendFormat:@"[%@%@ %@];\n", instanceName, identifierKey, value];
             }
         }
-        [_output appendString:@"\n"];    
+        [_output appendString:@"\n"];
     }
     
     // Now that the objects are created, recreate the hierarchy of the NIB
     NSArray *nibHierarchy = [_dictionary objectForKey:@"com.apple.ibtool.document.hierarchy"];
     for (NSDictionary *item in nibHierarchy)
     {
-//        int currentView = [[item objectForKey:@"object-id"] intValue];
+        //        int currentView = [[item objectForKey:@"object-id"] intValue];
         [self parseChildren:item withObjects:objects];
     }
     
@@ -266,7 +287,7 @@
         {
             NSString *subviewID = [subitem objectForKey:@"object-id"];
             NSString *superViewID = [dict objectForKey:@"object-id"];
-
+            
             id currentViewObject = [objects objectForKey:superViewID];
             NSString *instanceName = [self instanceNameForObject:currentViewObject :superViewID];
             
@@ -282,25 +303,61 @@
 
 - (NSString *)instanceNameForObject:(id)obj :(NSString *)ID
 {
-//    if ([arrOutLetName count] > 0) {
-//        for (NSString *str_outlet in arrOutLetName) {
-//            if ([str_outlet hasPrefix:ID]) {
-//                NSRange begin = [str_outlet rangeOfString:@"property"];
-//            }
-//        }
-//    }
     NSMutableString *instanceName = [[NSMutableString alloc]init];
-    NSString *custom_kclass = [obj objectForKey:@"custom-class"];
-    if ([custom_kclass length] > 0) {
-        [instanceName appendString:custom_kclass];
+    if ([self hasOutletName:ID]) {
+        [instanceName appendString:[self getElementNameFromOutlet:ID]];
+        return instanceName;
     }else{
-        id klass = [obj objectForKey:@"class"];
-         [instanceName appendString:[klass substringFromIndex:2]];
+        NSString *custom_kclass = [obj objectForKey:@"custom-class"];
+        if ([custom_kclass length] > 0) {
+            [instanceName appendString:custom_kclass];
+        }else{
+            id klass = [obj objectForKey:@"class"];
+            [instanceName appendString:[klass substringFromIndex:2]];
+        }
+        
+        [instanceName appendString:[[ID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString]];
+        
+        return instanceName;
     }
-    
-    [instanceName appendString:[[ID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString]];
+}
 
-    return instanceName;
+- (BOOL)hasOutletName:(NSString *)ID
+{
+    if([arrOutLetName count] > 0){
+        for (NSString *str_outlet in arrOutLetName) {
+            if ([str_outlet rangeOfString:ID].location != NSNotFound) {
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
+- (NSString *)getElementNameFromOutlet:(NSString *)ID
+{
+    if ([self hasOutletName:ID]) {
+        for (NSString *str_outlet in arrOutLetName) {
+            if ([str_outlet rangeOfString:ID].location != NSNotFound) {
+                NSArray *values = [str_outlet componentsSeparatedByString:@" "];
+                
+                if ([values count] > 0) {
+                    for(NSString *value in values)
+                    {
+                        if ([value hasPrefix:@"property"]) {
+                            NSArray *values2 = [value componentsSeparatedByString:@"="];
+                            
+                            if ([values2 count] > 0) {
+                                NSString *valueWithM = values2[1];
+                                return [valueWithM stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return @"error";
 }
 
 @end
