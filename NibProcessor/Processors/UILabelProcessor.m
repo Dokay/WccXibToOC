@@ -41,7 +41,7 @@
     {
         [output setObject:[value fontString] forKey:item];
     }
-    else if ([item isEqualToString:@"adjustsFontSizeToFitWidth"])
+    else if ([item isEqualToString:@"adjustsFontSizeToFitWidth"] && [value integerValue] != NO)
     {
         [output setObject:[value booleanString] forKey:item];
     }
@@ -53,7 +53,7 @@
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"baselineAdjustment"])
+    else if ([item isEqualToString:@"baselineAdjustment"] && [value integerValue] != 0)//UIBaselineAdjustmentAlignBaselines
     {
         [output setObject:[value baselineAdjustmentString] forKey:item];
     }
