@@ -21,7 +21,7 @@
 
 @implementation NibProcessor
 {
-    NSArray *arrOutLetName;
+    NSArray *_arrImagesLine;
     
     NSDictionary *_dicObjectsConnects;
 }
@@ -63,7 +63,7 @@
     _filename = [newFilename copy];
     [self getDictionaryFromNIB];
     
-    //    [self getOutLetFromNIB];
+    [self getImgaesFromNIB];
 }
 
 - (NSString *)inputAsText
@@ -86,34 +86,34 @@
 #pragma mark -
 #pragma mark Private methods
 
-//- (void)getOutLetFromNIB
-//{
-//    //    echo "$(grep .png ./ddd.txt)" > ddd.txt
-//
-//    NSArray *arguments = [NSArray arrayWithObjects: @"<outlet",
-//                          _filename, nil];
-//    NSTask *task = [[NSTask alloc] init];
-//    NSPipe *pipe = [NSPipe pipe];
-//    NSFileHandle *readHandle = [pipe fileHandleForReading];
-//    NSData *temp = nil;
-//
-//    NSMutableData *tempData = [[NSMutableData alloc]init];
-//
-//    [task setLaunchPath:@"/usr/bin/grep"];
-//    [task setArguments:arguments];
-//    [task setStandardOutput:pipe];
-//    [task launch];
-//
-//    while ((temp = [readHandle availableData]) && [temp length])
-//    {
-//        [tempData appendData:temp];
-//    }
-//    NSString *strOutLetResult = [[NSString alloc] initWithData:tempData encoding:NSASCIIStringEncoding];
-//    arrOutLetName =  [strOutLetResult componentsSeparatedByString:@"outlet"];
-//
-//    [task release];
-//
-//}
+- (void)getImgaesFromNIB
+{
+    //    echo "$(grep .png ./ddd.txt)" > ddd.txt
+
+    NSArray *arguments = [NSArray arrayWithObjects: @".png",
+                          _filename, nil];
+    NSTask *task = [[NSTask alloc] init];
+    NSPipe *pipe = [NSPipe pipe];
+    NSFileHandle *readHandle = [pipe fileHandleForReading];
+    NSData *temp = nil;
+
+    NSMutableData *tempData = [[NSMutableData alloc]init];
+
+    [task setLaunchPath:@"/usr/bin/grep"];
+    [task setArguments:arguments];
+    [task setStandardOutput:pipe];
+    [task launch];
+
+    while ((temp = [readHandle availableData]) && [temp length])
+    {
+        [tempData appendData:temp];
+    }
+    NSString *strOutLetResult = [[NSString alloc] initWithData:tempData encoding:NSASCIIStringEncoding];
+    _arrImagesLine =  [strOutLetResult componentsSeparatedByString:@"\n"];
+
+    [task release];
+
+}
 
 - (void)getDictionaryFromNIB
 {
@@ -264,11 +264,27 @@
             }
         }
         
-        //处理Xib中的图片
-        //        for(id obj in _dicObjectsHierarchy)
-        //        {
-        //
-        //        }
+        //处理Xib中的图片,UIImageView
+        if ([_arrImagesLine count] > 0) {
+            for(NSString *imageLine in _arrImagesLine)
+            {
+                if ([imageLine rangeOfString:@"<imageView "].location != NSNotFound) {
+                    NSRange range = [imageLine rangeOfString:@"<imageView "];
+                    imageLine = [imageLine substringFromIndex:range.location];//去除前面空格；
+//
+                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@"/>" withString:@"};"];
+                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@">" withString:@",\n}"];
+                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@" " withString:@",\n"];
+                     imageLine = [imageLine stringByReplacingOccurrencesOfString:@"=" withString:@":"];
+                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@"<imageView," withString:@"\"imageView\" = {"];
+                    NSData *dataStr = [imageLine dataUsingEncoding:NSUTF8StringEncoding];
+                    NSDictionary *dicImageView = [NSJSONSerialization JSONObjectWithData:dataStr options:NSJSONReadingAllowFragments error:nil];
+                    
+                    NSLog(@"fsefes");
+                }
+            }
+        }
+       
         
         if ([self hasOutletName:identifier]) {
             //        [instanceName appendString:[self getElementNameFromOutlet:ID]];
