@@ -11,7 +11,7 @@
             <rect key="frame" x="0.0" y="0.0" width="155" height="74"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="pL5-Xj-gbG">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="homepage_button_software.png" highlightedImage="homepage_button_software.png" id="pL5-Xj-gbG">
                     <rect key="frame" x="10" y="12" width="50" height="50"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
@@ -45,9 +45,10 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="A7U-id-PMf">
-                    <rect key="frame" x="0.0" y="0.0" width="155" height="74"/>
+                    <rect key="frame" x="63" y="22" width="30" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="highlighted" image="homepage_button_software.png"/>
                     <connections>
                         <action selector="onPressed:" destination="jag-Rd-Bue" eventType="touchUpInside" id="4dH-Fl-MvE"/>
                     </connections>
@@ -56,7 +57,6 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
                 <outlet property="btnMask" destination="A7U-id-PMf" id="oQL-QU-UnZ"/>
-                <outlet property="btnTouch" destination="A7U-id-PMf" id="kyD-Gh-ug2"/>
                 <outlet property="imageApp" destination="pL5-Xj-gbG" id="qcp-K2-J5b"/>
                 <outlet property="imageLeftUp" destination="RIN-iB-h7m" id="tCQ-TY-mwq"/>
                 <outlet property="imageViewLeftLine" destination="xqV-sP-diF" id="tuU-3R-Xwr"/>
@@ -66,4 +66,9 @@
             </connections>
         </view>
     </objects>
+    <resources>
+        <image name="homepage_button_software.png" width="65" height="65"/>
+        <image name="homepage_button_software.png" width="65" height="65"/>
+        <image name="homepage_button_software.png" width="65" height="65"/>
+    </resources>
 </document>

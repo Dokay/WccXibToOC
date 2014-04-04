@@ -65,6 +65,10 @@
         // There is no method in UIColor for CMYK colors...
         [color appendFormat:@"[UIColor colorWithCGColor:CGColorCreate(kCGColorSpaceGenericCMYK, {%1.3f, %1.3f, %1.3f, %1.3f, %1.3f})]", cyan, magenta, yellow, black, alpha];
     }
+    else if ([self hasPrefix:@"NSNamedColorSpace iPhoneSDK darkTextColor"] )
+    {
+        [color appendString:@"[UIColor colorWithNumber:9]"];
+    }
     else
     {
         [color appendString:self];

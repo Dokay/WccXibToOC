@@ -47,49 +47,49 @@
     {
         object = [self getProcessedClassName];
     }
-    if ([item isEqualToString:@"custom-class"])
-    {
-        object = value;
-    }
-    else if ([item isEqualToString:@"autoresizesSubviews"])
+//    if ([item isEqualToString:@"custom-class"])
+//    {
+//        object = value;
+//    }
+    else if ([item isEqualToString:@"autoresizesSubviews"] && [value integerValue] != 1)
     {
         object = [value booleanString];
     }
-    else if ([item isEqualToString:@"contentStretch"])
+    else if ([item isEqualToString:@"contentStretch"] && ![value isEqualToString:@"{{0, 0}, {1, 1}}"])
     {
         object = [NSString stringWithFormat:@"CGRectFromString(@\"%@\")", value];
     }
-    else if ([item isEqualToString:@"alpha"])
+    else if ([item isEqualToString:@"alpha"] && [value integerValue] != 1)
     {
         object = [value floatString];
     }
-    else if ([item isEqualToString:@"hidden"])
+    else if ([item isEqualToString:@"hidden"] && [value integerValue] != 0)
     {
         object = [value booleanString];
     }
-    else if ([item isEqualToString:@"opaqueForDevice"])
+    else if ([item isEqualToString:@"opaqueForDevice"] && [value integerValue] != 1)
     {
         object = [value booleanString];
         item = @"opaque";
     }
-    else if ([item isEqualToString:@"clipsSubviews"])
+    else if ([item isEqualToString:@"clipsSubviews"] && [value integerValue] != 0)
     {
         object = [value booleanString];
         item = @"clipsToBounds";
     }
-    else if ([item isEqualToString:@"clearsContextBeforeDrawing"])
+    else if ([item isEqualToString:@"clearsContextBeforeDrawing"] && [value integerValue] != 1)
     {
         object = [value booleanString];
     }
-    else if ([item isEqualToString:@"userInteractionEnabled"])
+    else if ([item isEqualToString:@"userInteractionEnabled"] && [value integerValue] != 1)
     {
         object = [value booleanString];
     }
-    else if ([item isEqualToString:@"multipleTouchEnabled"])
+    else if ([item isEqualToString:@"multipleTouchEnabled"] && [value integerValue] != 0)
     {
         object = [value booleanString];
     }
-    else if ([item isEqualToString:@"tag"])
+    else if ([item isEqualToString:@"tag"] && [value integerValue] != 0)
     {
         object = [value intString];
     }
@@ -97,7 +97,7 @@
     {
         object = [value colorString];
     }
-    else if ([item isEqualToString:@"contentMode"])
+    else if ([item isEqualToString:@"contentMode"] && [value integerValue] != 0)
     {
         object = [value contentModeString];
     }

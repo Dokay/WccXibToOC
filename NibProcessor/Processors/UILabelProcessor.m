@@ -41,19 +41,19 @@
     {
         [output setObject:[value fontString] forKey:item];
     }
-    else if ([item isEqualToString:@"adjustsFontSizeToFitWidth"])
+    else if ([item isEqualToString:@"adjustsFontSizeToFitWidth"] && [value integerValue] != NO)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"minimumFontSize"])
+    else if ([item isEqualToString:@"minimumFontSize"] && [value integerValue] != 0)
     {
         [output setObject:[value floatString] forKey:item];
     }
-    else if ([item isEqualToString:@"enabled"])
+    else if ([item isEqualToString:@"enabled"] && [value integerValue] != YES)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"baselineAdjustment"])
+    else if ([item isEqualToString:@"baselineAdjustment"] && [value integerValue] != 0)//UIBaselineAdjustmentAlignBaselines
     {
         [output setObject:[value baselineAdjustmentString] forKey:item];
     }
@@ -61,7 +61,7 @@
     {
         [output setObject:[value lineBreakModeString] forKey:item];
     }
-    else if ([item isEqualToString:@"numberOfLines"])
+    else if ([item isEqualToString:@"numberOfLines"] && [value integerValue] != 1)
     {
         [output setObject:[value intString] forKey:item];
     }

@@ -148,6 +148,7 @@
 - (void)process
 {
     //    NSDictionary *nibClasses = [_dictionary objectForKey:@"com.apple.ibtool.document.classes"];
+    //    NSArray *_dicObjectsHierarchy = [_dictionary objectForKey:@"com.apple.ibtool.document.hierarchy"];
     _dicObjectsConnects = [_dictionary objectForKey:@"com.apple.ibtool.document.connections"];
     NSDictionary *nibObjects = [_dictionary objectForKey:@"com.apple.ibtool.document.objects"];
     NSMutableDictionary *objects = [[NSMutableDictionary alloc] init];
@@ -179,6 +180,8 @@
     // Let's print everything as source code
     [_output release];
     _output = [[NSMutableString alloc] init];
+    [_output appendString:@"- (void)initUIWithXib\n"];
+    [_output appendString:@"{\n"];
     for (NSString *identifier in objects)
     {
         id object = [objects objectForKey:identifier];
@@ -206,9 +209,9 @@
         
         if ([custom_klass length] > 0) {
             constructor = [constructor stringByReplacingOccurrencesOfString:klass withString:custom_klass];
-            [_output appendFormat:@"%@ = %@;\n", instanceName, constructor];
+            [_output appendFormat:@"  %@ *%@ = %@;\n",custom_klass, instanceName, constructor];
         }else{
-            [_output appendFormat:@"%@ = %@;\n", instanceName, constructor];
+            [_output appendFormat:@"  %@ *%@ = %@;\n",klass, instanceName, constructor];
         }
         
         
@@ -224,12 +227,12 @@
                 switch (self.codeStyle)
                 {
                     case NibProcessorCodeStyleProperties:
-                        [_output appendFormat:@"%@.%@ = %@;\n", instanceName, key, value];
+                        [_output appendFormat:@"  %@.%@ = %@;\n", instanceName, key, value];
                         break;
                         
                     case NibProcessorCodeStyleSetter:
                         
-                        [_output appendFormat:@"[%@ set%@:%@];\n", instanceName, key, value];
+                        [_output appendFormat:@"  [%@ set%@:%@];\n", instanceName, key, value];
                         break;
                         
                     default:
@@ -253,12 +256,24 @@
                     {
                         if ([[object objectForKey:key_obj] isEqualToString:@"event-type"]) {
                             NSString *event = [NSString stringWithFormat:@"UIControlEvent%@", [key_obj stringByReplacingOccurrencesOfString:@" " withString:@""]];
-                            [_output appendFormat:@"[%@ addTarget:self action:@selector(%@) forControlEvents:%@];\n", instanceName, selector, event];
+                            [_output appendFormat:@"  [%@ addTarget:self action:@selector(%@) forControlEvents:%@];\n", instanceName, selector, event];
                         }
                     }
                     
                 }
             }
+        }
+        
+        //处理Xib中的图片
+        //        for(id obj in _dicObjectsHierarchy)
+        //        {
+        //
+        //        }
+        
+        if ([self hasOutletName:identifier]) {
+            //        [instanceName appendString:[self getElementNameFromOutlet:ID]];
+            [_output appendFormat:@"  %@ = %@;\n",[self getElementNameFromOutlet:identifier], instanceName];
+            
         }
         
         
@@ -269,7 +284,7 @@
             id value = [object objectForKey:key];
             if ([key hasPrefix:@"__method__"])
             {
-                [_output appendFormat:@"[%@%@ %@];\n", instanceName, identifierKey, value];
+                [_output appendFormat:@"  [%@%@ %@];\n", instanceName, identifierKey, value];
             }
         }
         [_output appendString:@"\n"];
@@ -282,6 +297,8 @@
         //        int currentView = [[item objectForKey:@"object-id"] intValue];
         [self parseChildren:item withObjects:objects];
     }
+    [_output appendString:@"}\n"];
+    
     
     [objects release];
     objects = nil;
@@ -305,7 +322,7 @@
             
             [self parseChildren:subitem withObjects:objects];
             
-            [_output appendFormat:@"[%@ addSubview:%@];\n", instanceName, subInstanceName];
+            [_output appendFormat:@"  [%@ addSubview:%@];\n", instanceName, subInstanceName];
         }
     }
 }
@@ -313,22 +330,22 @@
 - (NSString *)instanceNameForObject:(id)obj :(NSString *)ID
 {
     NSMutableString *instanceName = [[NSMutableString alloc]init];
-    if ([self hasOutletName:ID]) {
-        [instanceName appendString:[self getElementNameFromOutlet:ID]];
-        return instanceName;
+    //    if ([self hasOutletName:ID]) {
+    //        [instanceName appendString:[self getElementNameFromOutlet:ID]];
+    //        return instanceName;
+    //    }else{
+    NSString *custom_kclass = [obj objectForKey:@"custom-class"];
+    if ([custom_kclass length] > 0) {
+        [instanceName appendString:custom_kclass];
     }else{
-        NSString *custom_kclass = [obj objectForKey:@"custom-class"];
-        if ([custom_kclass length] > 0) {
-            [instanceName appendString:custom_kclass];
-        }else{
-            id klass = [obj objectForKey:@"class"];
-            [instanceName appendString:[klass substringFromIndex:2]];
-        }
-        
-        [instanceName appendString:[[ID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString]];
-        
-        return instanceName;
+        id klass = [obj objectForKey:@"class"];
+        [instanceName appendString:[klass substringFromIndex:2]];
     }
+    
+    [instanceName appendString:[[ID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString]];
+    
+    return instanceName;
+    //    }
 }
 
 - (BOOL)hasOutletName:(NSString *)ID
