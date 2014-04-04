@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4510" systemVersion="13A603" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4510" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1072" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
@@ -56,6 +56,7 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
                 <outlet property="btnMask" destination="A7U-id-PMf" id="oQL-QU-UnZ"/>
+                <outlet property="btnTouch" destination="A7U-id-PMf" id="kyD-Gh-ug2"/>
                 <outlet property="imageApp" destination="pL5-Xj-gbG" id="qcp-K2-J5b"/>
                 <outlet property="imageLeftUp" destination="RIN-iB-h7m" id="tCQ-TY-mwq"/>
                 <outlet property="imageViewLeftLine" destination="xqV-sP-diF" id="tuU-3R-Xwr"/>

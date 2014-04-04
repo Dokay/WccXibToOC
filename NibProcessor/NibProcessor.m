@@ -63,7 +63,7 @@
     _filename = [newFilename copy];
     [self getDictionaryFromNIB];
     
-//    [self getOutLetFromNIB];
+    //    [self getOutLetFromNIB];
 }
 
 - (NSString *)inputAsText
@@ -89,30 +89,30 @@
 //- (void)getOutLetFromNIB
 //{
 //    //    echo "$(grep .png ./ddd.txt)" > ddd.txt
-//    
+//
 //    NSArray *arguments = [NSArray arrayWithObjects: @"<outlet",
 //                          _filename, nil];
 //    NSTask *task = [[NSTask alloc] init];
 //    NSPipe *pipe = [NSPipe pipe];
 //    NSFileHandle *readHandle = [pipe fileHandleForReading];
 //    NSData *temp = nil;
-//    
+//
 //    NSMutableData *tempData = [[NSMutableData alloc]init];
-//    
+//
 //    [task setLaunchPath:@"/usr/bin/grep"];
 //    [task setArguments:arguments];
 //    [task setStandardOutput:pipe];
 //    [task launch];
-//    
+//
 //    while ((temp = [readHandle availableData]) && [temp length])
 //    {
 //        [tempData appendData:temp];
 //    }
 //    NSString *strOutLetResult = [[NSString alloc] initWithData:tempData encoding:NSASCIIStringEncoding];
 //    arrOutLetName =  [strOutLetResult componentsSeparatedByString:@"outlet"];
-//    
+//
 //    [task release];
-//    
+//
 //}
 
 - (void)getDictionaryFromNIB
@@ -147,7 +147,7 @@
 
 - (void)process
 {
-//    NSDictionary *nibClasses = [_dictionary objectForKey:@"com.apple.ibtool.document.classes"];
+    //    NSDictionary *nibClasses = [_dictionary objectForKey:@"com.apple.ibtool.document.classes"];
     _dicObjectsConnects = [_dictionary objectForKey:@"com.apple.ibtool.document.connections"];
     NSDictionary *nibObjects = [_dictionary objectForKey:@"com.apple.ibtool.document.objects"];
     NSMutableDictionary *objects = [[NSMutableDictionary alloc] init];
@@ -206,18 +206,9 @@
         
         if ([custom_klass length] > 0) {
             constructor = [constructor stringByReplacingOccurrencesOfString:klass withString:custom_klass];
-            if ([self hasOutletName:identifier]) {
-                [_output appendFormat:@"%@ = %@;\n", instanceName, constructor];
-            }else{
-                [_output appendFormat:@"%@ *%@%@ = %@;\n", custom_klass, instanceName, identifierKey, constructor];
-            }
-            
+            [_output appendFormat:@"%@ = %@;\n", instanceName, constructor];
         }else{
-            if ([self hasOutletName:identifier]) {
-                [_output appendFormat:@"%@ = %@;\n", instanceName, constructor];
-            }else{
-                [_output appendFormat:@"%@ *%@%@ = %@;\n", klass, instanceName, identifierKey, constructor];
-            }
+            [_output appendFormat:@"%@ = %@;\n", instanceName, constructor];
         }
         
         
@@ -233,20 +224,12 @@
                 switch (self.codeStyle)
                 {
                     case NibProcessorCodeStyleProperties:
-                        if ([self hasOutletName:identifier]) {
-                            [_output appendFormat:@"%@.%@ = %@;\n", instanceName, key, value];
-                        }else{
-                            [_output appendFormat:@"%@%@.%@ = %@;\n", instanceName, identifierKey, key, value];
-                        }
+                        [_output appendFormat:@"%@.%@ = %@;\n", instanceName, key, value];
                         break;
                         
                     case NibProcessorCodeStyleSetter:
                         
-                        if ([self hasOutletName:identifier]) {
-                            [_output appendFormat:@"[%@ set%@:%@];\n", instanceName, key, value];
-                        }else{
-                            [_output appendFormat:@"[%@%@ set%@:%@];\n", instanceName, identifierKey, key, value];
-                        }
+                        [_output appendFormat:@"[%@ set%@:%@];\n", instanceName, key, value];
                         break;
                         
                     default:
@@ -254,6 +237,30 @@
                 }
             }
         }
+        
+        //添加event outlet
+        for (NSDictionary *key in _dicObjectsConnects)
+        {
+            id object = [_dicObjectsConnects objectForKey:key];
+            NSString *des_id = [object objectForKey:@"source-id"];
+            NSString *des_type = [object objectForKey:@"type"];
+            if ([des_id length] > 0 && [des_id isEqualToString:identifier] && [des_type isEqualToString:@"IBCocoaTouchEventConnection"]) {
+                
+                if ([[[object objectForKey:@"source-label"] lowercaseString]rangeOfString:@"button"].location != NSNotFound) {
+                    //                    [btnDeleteRecord addTarget:self action:@selector(onDeleteRecord:) forControlEvents:UIControlEventTouchUpInside];
+                    NSString *selector = [object objectForKey:@"label"];
+                    for (id key_obj in object)
+                    {
+                        if ([[object objectForKey:key_obj] isEqualToString:@"event-type"]) {
+                            NSString *event = [NSString stringWithFormat:@"UIControlEvent%@", [key_obj stringByReplacingOccurrencesOfString:@" " withString:@""]];
+                            [_output appendFormat:@"[%@ addTarget:self action:@selector(%@) forControlEvents:%@];\n", instanceName, selector, event];
+                        }
+                    }
+                    
+                }
+            }
+        }
+        
         
         // Finally, output the method calls, ordered alphabetically
         orderedKeys = [object keysSortedByValueUsingSelector:@selector(caseInsensitiveCompare:)];
@@ -326,13 +333,13 @@
 
 - (BOOL)hasOutletName:(NSString *)ID
 {
-//    if([arrOutLetName count] > 0){
-//        for (NSString *str_outlet in arrOutLetName) {
-//            if ([str_outlet rangeOfString:ID].location != NSNotFound) {
-//                return YES;
-//            }
-//        }
-//    }
+    //    if([arrOutLetName count] > 0){
+    //        for (NSString *str_outlet in arrOutLetName) {
+    //            if ([str_outlet rangeOfString:ID].location != NSNotFound) {
+    //                return YES;
+    //            }
+    //        }
+    //    }
     
     if ([_dicObjectsConnects count ] > 0) {
         
@@ -352,25 +359,25 @@
 - (NSString *)getElementNameFromOutlet:(NSString *)ID
 {
     if ([self hasOutletName:ID]) {
-//        for (NSString *str_outlet in arrOutLetName) {
-//            if ([str_outlet rangeOfString:ID].location != NSNotFound) {
-//                NSArray *values = [str_outlet componentsSeparatedByString:@" "];
-//                
-//                if ([values count] > 0) {
-//                    for(NSString *value in values)
-//                    {
-//                        if ([value hasPrefix:@"property"]) {
-//                            NSArray *values2 = [value componentsSeparatedByString:@"="];
-//                            
-//                            if ([values2 count] > 0) {
-//                                NSString *valueWithM = values2[1];
-//                                return [valueWithM stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        //        for (NSString *str_outlet in arrOutLetName) {
+        //            if ([str_outlet rangeOfString:ID].location != NSNotFound) {
+        //                NSArray *values = [str_outlet componentsSeparatedByString:@" "];
+        //
+        //                if ([values count] > 0) {
+        //                    for(NSString *value in values)
+        //                    {
+        //                        if ([value hasPrefix:@"property"]) {
+        //                            NSArray *values2 = [value componentsSeparatedByString:@"="];
+        //
+        //                            if ([values2 count] > 0) {
+        //                                NSString *valueWithM = values2[1];
+        //                                return [valueWithM stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
         
         for (NSDictionary *key in _dicObjectsConnects)
         {
