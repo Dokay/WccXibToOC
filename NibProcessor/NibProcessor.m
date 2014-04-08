@@ -180,7 +180,7 @@
     // Let's print everything as source code
     [_output release];
     _output = [[NSMutableString alloc] init];
-    [_output appendString:@"- (void)initUIWithXib\n"];
+     [_output appendString:@"- (void)initUIWithXib\n"];
     [_output appendString:@"{\n"];
     for (NSString *identifier in objects)
     {
@@ -263,6 +263,11 @@
                 }
             }
         }
+    if ([self hasOutletName:identifier]) {
+//        [instanceName appendString:[self getElementNameFromOutlet:ID]];
+        [_output appendFormat:@"  %@ = %@;\n",[self getElementNameFromOutlet:identifier], instanceName];
+
+    }
         
         //处理Xib中的图片,UIImageView
         if ([_arrImagesLine count] > 0) {
@@ -344,7 +349,6 @@
     }
     [_output appendString:@"}\n"];
     
-    
     [objects release];
     objects = nil;
 }
@@ -375,22 +379,22 @@
 - (NSString *)instanceNameForObject:(id)obj :(NSString *)ID
 {
     NSMutableString *instanceName = [[NSMutableString alloc]init];
-    //    if ([self hasOutletName:ID]) {
-    //        [instanceName appendString:[self getElementNameFromOutlet:ID]];
-    //        return instanceName;
-    //    }else{
-    NSString *custom_kclass = [obj objectForKey:@"custom-class"];
-    if ([custom_kclass length] > 0) {
-        [instanceName appendString:custom_kclass];
-    }else{
-        id klass = [obj objectForKey:@"class"];
-        [instanceName appendString:[klass substringFromIndex:2]];
-    }
-    
-    [instanceName appendString:[[ID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString]];
-    
-    return instanceName;
-    //    }
+//    if ([self hasOutletName:ID]) {
+//        [instanceName appendString:[self getElementNameFromOutlet:ID]];
+//        return instanceName;
+//    }else{
+        NSString *custom_kclass = [obj objectForKey:@"custom-class"];
+        if ([custom_kclass length] > 0) {
+            [instanceName appendString:custom_kclass];
+        }else{
+            id klass = [obj objectForKey:@"class"];
+            [instanceName appendString:[klass substringFromIndex:2]];
+        }
+        
+        [instanceName appendString:[[ID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString]];
+        
+        return instanceName;
+//    }
 }
 
 - (BOOL)hasOutletName:(NSString *)ID
