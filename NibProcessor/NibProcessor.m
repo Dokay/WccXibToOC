@@ -64,6 +64,8 @@
     [self getDictionaryFromNIB];
     
     [self getImgaesFromNIB];
+    
+//    [self praseXml];
 }
 
 - (NSString *)inputAsText
@@ -110,7 +112,16 @@
     }
     NSString *strOutLetResult = [[NSString alloc] initWithData:tempData encoding:NSASCIIStringEncoding];
     _arrImagesLine =  [strOutLetResult componentsSeparatedByString:@"\n"];
-
+    
+    //输出未处理的state,比如 button的state
+    if ([_arrImagesLine count] > 0) {
+        for(NSString *imageLine in _arrImagesLine)
+        {
+            if ([imageLine rangeOfString:@"<state "].location != NSNotFound) {
+                NSLog(@"state not peocess :%@\n",imageLine);
+            }
+        }
+    }
     [task release];
 
 }
@@ -459,5 +470,48 @@
     }
     return @"error";
 }
+
+//- (void)praseXml
+//{
+//    NSData *data = [NSData dataWithContentsOfFile:_filename];
+//    
+//    NSXMLParser *parser=[[NSXMLParser alloc] initWithData:data];
+//    
+//    [parser setDelegate:self];//设置NSXMLParser对象的解析方法代理
+//    [parser setShouldProcessNamespaces:NO];
+//    [parser parse];//开始解析
+//}
+//
+////发现元素开始符的处理函数  （即报告元素的开始以及元素的属性）
+//- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
+//    attributes:(NSDictionary *)attributeDict
+//{
+//    NSLog(@"fesfsef---%@:%@",elementName,attributeDict);
+//}
+//
+//
+////处理标签包含内容字符 （报告元素的所有或部分内容）
+//- (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
+//{
+//
+//}
+//
+////发现元素结束符的处理函数，保存元素各项目数据（即报告元素的结束标记）
+//- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
+//{
+//
+//}
+//
+////报告解析的结束
+//- (void)parserDidEndDocument:(NSXMLParser *)parser
+//{
+//
+//}
+//
+////报告不可恢复的解析错误
+//- (void)paser:parserErrorOccured
+//{
+//
+//}
 
 @end

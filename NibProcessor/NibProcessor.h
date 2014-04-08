@@ -13,7 +13,7 @@ typedef enum {
     NibProcessorCodeStyleSetter = 2
 } NibProcessorCodeStyle;
 
-@interface NibProcessor : NSObject
+@interface NibProcessor : NSObject <NSXMLParserDelegate>
 {
 @private
     NSDictionary *_dictionary;
