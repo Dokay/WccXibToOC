@@ -24,6 +24,12 @@
     NSArray *_arrImagesLine;
     
     NSDictionary *_dicObjectsConnects;
+    
+    NSMutableArray *_arrBtnsWithState;
+    
+    NSMutableDictionary *_dicBtnWithStateProperty;
+    
+    BOOL _bBtnBegin;
 }
 
 @dynamic input;
@@ -64,8 +70,7 @@
     [self getDictionaryFromNIB];
     
     [self getImgaesFromNIB];
-    
-//    [self praseXml];
+
 }
 
 - (NSString *)inputAsText
@@ -118,7 +123,9 @@
         for(NSString *imageLine in _arrImagesLine)
         {
             if ([imageLine rangeOfString:@"<state "].location != NSNotFound) {
-                NSLog(@"state not peocess :%@\n",imageLine);
+//                NSLog(@"state not peocess :%@\n",imageLine);
+                
+                [self praseXml];
             }
         }
     }
@@ -279,6 +286,37 @@
         [_output appendFormat:@"  %@ = %@;\n",[self getElementNameFromOutlet:identifier], instanceName];
 
     }
+        
+        //处理state，例如Button的
+        if([_arrBtnsWithState count] > 0){
+            for(NSDictionary *dic in _arrBtnsWithState){
+                NSDictionary *dicValue = [dic valueForKey:@"button"];
+                if ([[dicValue valueForKey:@"id"] isEqualToString:identifier]) {
+                    NSDictionary *stateValue = [dic valueForKey:@"state"];
+                    NSString *stateName = [stateValue valueForKey:@"key"];
+                    
+                    NSString *stateNameFirstCharaxterRight = [stateName substringFromIndex:1];
+                    NSString *stateNameFirstCharaxterLeft = [[stateName substringToIndex:1] uppercaseString];
+                    
+                    NSString *imageName = [stateValue valueForKey:@"image"];
+                    if ([imageName length] > 0){
+                        // [butt setImage: [UIImage imageNamed:@"selectedImage.png"] forState:UIControlStateNormal];
+                        //        UIControlStateNormal       = 0,         常规状态显现
+                        //        UIControlStateHighlighted  = 1 << 0,    高亮状态显现
+                        //        UIControlStateDisabled     = 1 << 1,    禁用的状态才会显现
+                        //        UIControlStateSelected     = 1 << 2,    选中状态
+                        imageName = [imageName stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
+                        imageName = [imageName stringByReplacingOccurrencesOfString:@".png" withString:@""];
+                        [_output appendFormat:@"  [%@ setImage: [UIImage imageNamed:@\"%@\"] forState:UIControlState%@%@];\n", instanceName, imageName,stateNameFirstCharaxterLeft,stateNameFirstCharaxterRight];
+                    }
+                    
+                    NSString *titleText = [stateValue valueForKey:@"title"];
+                    if ([titleText length] > 0) {
+                       [_output appendFormat:@"  [%@ setTitle:@\"%@\" forState:UIControlState%@%@];\n", instanceName, titleText,stateNameFirstCharaxterLeft,stateNameFirstCharaxterRight];
+                    }
+                }
+            }
+        }
         
         //处理Xib中的图片,UIImageView
         if ([_arrImagesLine count] > 0) {
@@ -471,47 +509,79 @@
     return @"error";
 }
 
-//- (void)praseXml
-//{
-//    NSData *data = [NSData dataWithContentsOfFile:_filename];
-//    
-//    NSXMLParser *parser=[[NSXMLParser alloc] initWithData:data];
-//    
-//    [parser setDelegate:self];//设置NSXMLParser对象的解析方法代理
-//    [parser setShouldProcessNamespaces:NO];
-//    [parser parse];//开始解析
-//}
-//
-////发现元素开始符的处理函数  （即报告元素的开始以及元素的属性）
-//- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
-//    attributes:(NSDictionary *)attributeDict
-//{
-//    NSLog(@"fesfsef---%@:%@",elementName,attributeDict);
-//}
-//
-//
-////处理标签包含内容字符 （报告元素的所有或部分内容）
-//- (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
-//{
-//
-//}
-//
-////发现元素结束符的处理函数，保存元素各项目数据（即报告元素的结束标记）
-//- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
-//{
-//
-//}
-//
-////报告解析的结束
-//- (void)parserDidEndDocument:(NSXMLParser *)parser
-//{
-//
-//}
-//
-////报告不可恢复的解析错误
-//- (void)paser:parserErrorOccured
-//{
-//
-//}
+
+#pragma --mark process xml for button state
+- (void)praseXml
+{
+    NSData *data = [NSData dataWithContentsOfFile:_filename];
+    
+    NSXMLParser *parser=[[NSXMLParser alloc] initWithData:data];
+    
+    [parser setDelegate:self];//设置NSXMLParser对象的解析方法代理
+    [parser setShouldProcessNamespaces:NO];
+    [parser parse];//开始解析
+}
+
+#pragma --mark NSXMLParserDelegate
+//发现元素开始符的处理函数  （即报告元素的开始以及元素的属性）
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
+    attributes:(NSDictionary *)attributeDict
+{
+//    NSLog(@"didStartElement---%@:%@",elementName,attributeDict);
+    
+    
+    
+    if ([elementName isEqualToString:@"button"]) {
+        _bBtnBegin = YES;
+
+    }
+    if (_bBtnBegin == YES) {
+        if (_dicBtnWithStateProperty == nil) {
+            _dicBtnWithStateProperty = [[NSMutableDictionary alloc]init];
+        }
+        
+        if (_arrBtnsWithState == nil) {
+            _arrBtnsWithState = [[NSMutableArray alloc]init];
+        }
+        [_dicBtnWithStateProperty setObject:attributeDict forKey:elementName];
+    }
+}
+
+
+//处理标签包含内容字符 （报告元素的所有或部分内容）
+- (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
+{
+    
+}
+
+//发现元素结束符的处理函数，保存元素各项目数据（即报告元素的结束标记）
+- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
+{
+//    NSLog(@"didEndElement---%@:%@",elementName,qName);
+    if ([elementName isEqualToString:@"button"]) {
+        _bBtnBegin = NO;
+        
+        for(NSString *key in _dicBtnWithStateProperty)
+        {
+            if ([key isEqualToString:@"state"]) {
+                NSDictionary *dic = [_dicBtnWithStateProperty copy];
+                [_arrBtnsWithState addObject:dic];
+            }
+        }
+        _dicBtnWithStateProperty = nil;
+    }
+}
+
+//报告解析的结束
+- (void)parserDidEndDocument:(NSXMLParser *)parser
+{
+
+}
+
+//报告不可恢复的解析错误
+- (void)paser:parserErrorOccured
+{
+
+}
 
 @end
