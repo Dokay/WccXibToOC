@@ -29,7 +29,7 @@
     {
         [output setObject:[value quotedAsCodeString] forKey:item];
     }
-    else if ([item isEqualToString:@"textAlignment"])
+    else if ([item isEqualToString:@"textAlignment"] && [value integerValue] != 0)
     {
         [output setObject:[value textAlignmentString] forKey:item];
     }
@@ -65,7 +65,7 @@
     {
         [output setObject:[value intString] forKey:item];
     }
-    else if ([item isEqualToString:@"shadowOffset"])
+    else if ([item isEqualToString:@"shadowOffset"] && ![value isEqualToString:@"{0, -1}"])
     {
         [output setObject:[value sizeString] forKey:item];
     }
@@ -76,6 +76,33 @@
     else if ([item isEqualToString:@"highlightedColor"])
     {
         [output setObject:[value colorString] forKey:@"highlightedTextColor"];
+    }
+    else if ([item isEqualToString:@"userInteractionEnabled"])
+    {
+        if([value integerValue] != 0)
+        {
+           [output setObject:[value booleanString] forKey:item];
+        }
+    }
+    else if ([item isEqualToString:@"clipsSubviews"])
+    {
+        if ([value integerValue] != 1) {
+            item = @"clipsToBounds";
+            [output setObject:[value booleanString] forKey:item];
+        }
+    }
+    else if ([item isEqualToString:@"opaqueForDevice"])
+    {
+        if ([value integerValue] != 0) {
+            item = @"opaque";
+            [output setObject:[value booleanString] forKey:item];
+        }
+    }
+    else if ([item isEqualToString:@"contentMode"] )
+    {
+        if ([value integerValue] != 7) {
+             [output setObject:[value contentModeString] forKey:item];
+        }
     }
     else
     {

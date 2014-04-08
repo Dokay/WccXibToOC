@@ -31,11 +31,11 @@
 
 - (void)processKey:(id)item value:(id)value
 {
-    if ([item isEqualToString:@"adjustsImageWhenDisabled"])
+    if ([item isEqualToString:@"adjustsImageWhenDisabled"] && [value integerValue] != 1)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"adjustsImageWhenHighlighted"])
+    else if ([item isEqualToString:@"adjustsImageWhenHighlighted"] && [value integerValue] != 1)
     {
         [output setObject:[value booleanString] forKey:item];
     }
@@ -47,11 +47,11 @@
     {
         [output setObject:[value lineBreakModeString] forKey:@"titleLabel.lineBreakMode"];
     }
-    else if ([item isEqualToString:@"reversesTitleShadowWhenHighlighted"])
+    else if ([item isEqualToString:@"reversesTitleShadowWhenHighlighted"] && [value integerValue] != 0)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"showsTouchWhenHighlighted"])
+    else if ([item isEqualToString:@"showsTouchWhenHighlighted"] && [value integerValue] != 0)
     {
         [output setObject:[value booleanString] forKey:item];
     }

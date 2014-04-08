@@ -23,13 +23,20 @@
 
 - (void)processKey:(id)item value:(id)value
 {
-    if ([item isEqualToString:@"image"])
+    if ([item isEqualToString:@"userInteractionEnabled"])
+    {
+        if([value integerValue] != 0)
+        {
+            [output setObject:[value booleanString] forKey:item];
+        }
+    }
+    else if ([item isEqualToString:@"image"])
     {
         // The image property cannot be retrieved by ibtool, 
         // so here we just add the property with a nil value.
-        [output setObject:@"nil" forKey:@"image"];
-    }    
-    else if ([item isEqualToString:@"highlighted"])
+//        [output setObject:@"nil" forKey:@"image"];
+    }
+    else if ([item isEqualToString:@"highlighted"] && [value integerValue] != 0)
     {
         [output setObject:[value booleanString] forKey:item];
     }

@@ -281,11 +281,6 @@
                 }
             }
         }
-    if ([self hasOutletName:identifier]) {
-//        [instanceName appendString:[self getElementNameFromOutlet:ID]];
-        [_output appendFormat:@"  %@ = %@;\n",[self getElementNameFromOutlet:identifier], instanceName];
-
-    }
         
         //处理state，例如Button的
         if([_arrBtnsWithState count] > 0){
@@ -373,8 +368,7 @@
             //        [instanceName appendString:[self getElementNameFromOutlet:ID]];
             [_output appendFormat:@"  %@ = %@;\n",[self getElementNameFromOutlet:identifier], instanceName];
             
-        }
-        
+        } 
         
         // Finally, output the method calls, ordered alphabetically
         orderedKeys = [object keysSortedByValueUsingSelector:@selector(caseInsensitiveCompare:)];

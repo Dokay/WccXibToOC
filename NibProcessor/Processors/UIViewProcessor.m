@@ -101,7 +101,7 @@
     {
         object = [value contentModeString];
     }
-    else if ([item isEqualToString:@"autoresizingMask"])
+    else if ([item isEqualToString:@"autoresizingMask"] && [value integerValue] != 36)
     {
         object = [value autoresizingMaskString];
     }
