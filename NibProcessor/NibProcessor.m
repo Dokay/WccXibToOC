@@ -223,10 +223,8 @@
         NSString *klass = [object objectForKey:@"class"];
         NSString *constructor = [object objectForKey:@"constructor"];
         
-        //        if ([self hasOutletName:ID]) {
-        
         if ([custom_klass length] > 0) {
-            constructor = [constructor stringByReplacingOccurrencesOfString:klass withString:custom_klass];
+            constructor = [constructor stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"[[%@",klass] withString:[NSString stringWithFormat:@"[[%@",custom_klass]];
             [_output appendFormat:@"  %@ *%@ = %@;\n",custom_klass, instanceName, constructor];
         }else{
             [_output appendFormat:@"  %@ *%@ = %@;\n",klass, instanceName, constructor];
@@ -239,7 +237,9 @@
         {
             id value = [object objectForKey:key];
             if (![key hasPrefix:@"__method__"]
-                && ![key isEqualToString:@"constructor"] && ![key isEqualToString:@"class"]
+                && ![key isEqualToString:@"constructor"]
+                && ![key isEqualToString:@"class"]
+                && ![key isEqualToString:@"custom-class"]
                 && ![key hasPrefix:@"__helper__"])
             {
                 switch (self.codeStyle)

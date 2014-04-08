@@ -67,7 +67,7 @@
     }
     else if ([self hasPrefix:@"NSNamedColorSpace iPhoneSDK darkTextColor"] )
     {
-        [color appendString:@"[UIcolor colorWithNumber:9]"];
+        [color appendString:@"[UIColor colorWithNumber:9]"];
     }
     else
     {

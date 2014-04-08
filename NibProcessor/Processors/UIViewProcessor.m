@@ -47,10 +47,10 @@
     {
         object = [self getProcessedClassName];
     }
-//    if ([item isEqualToString:@"custom-class"])
-//    {
-//        object = value;
-//    }
+    if ([item isEqualToString:@"custom-class"])
+    {
+        object = value;
+    }
     else if ([item isEqualToString:@"autoresizesSubviews"] && [value integerValue] != 1)
     {
         object = [value booleanString];
