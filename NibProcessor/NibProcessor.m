@@ -198,7 +198,8 @@
     // Let's print everything as source code
     [_output release];
     _output = [[NSMutableString alloc] init];
-     [_output appendString:@"- (void)initUIWithXib\n"];
+    [_output appendString:@"#pragma --mark replace xib with code \n"];
+    [_output appendString:@"- (void)initUIWithXib\n"];
     [_output appendString:@"{\n"];
     for (NSString *identifier in objects)
     {
@@ -495,7 +496,7 @@
             NSString *des_type = [object objectForKey:@"type"];
             if ([des_id length] > 0 && [des_id isEqualToString:ID] && [des_type isEqualToString:@"IBCocoaTouchOutletConnection"]) {
                 
-                return [NSString stringWithFormat:@"_%@",[object objectForKey:@"label"]];
+                return [NSString stringWithFormat:@"self.%@",[object objectForKey:@"label"]];
             }
         }
         

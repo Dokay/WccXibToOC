@@ -259,7 +259,11 @@
     NSArray *values = [NSArray arrayWithObjects:@"UITableViewCellSeparatorStyleNone", 
                        @"UITableViewCellSeparatorStyleSingleLine", 
                        @"UITableViewCellSeparatorStyleSingleLineEtched", nil];
-    return [values objectAtIndex:[self intValue]];
+    if ([self integerValue] > [values count]) {
+        return values[0];
+    }else{
+        return [values objectAtIndex:[self intValue]];
+    }
 }
 
 - (NSString *)tableViewCellAccessoryString
