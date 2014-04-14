@@ -46,23 +46,23 @@
     {
         [output setObject:[value tableViewCellSeparatorStyleString] forKey:item];
     }
-    else if ([item isEqualToString:@"sectionIndexMinimumDisplayRowCount"])
+    else if ([item isEqualToString:@"sectionIndexMinimumDisplayRowCount"] && [value integerValue] != 0)
     {
         [output setObject:[value intString] forKey:item];
     }
-    else if ([item isEqualToString:@"allowsMultipleSelection"])
+    else if ([item isEqualToString:@"allowsMultipleSelection"] && [value integerValue] != 0)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"allowsMultipleSelectionDuringEditing"])
+    else if ([item isEqualToString:@"allowsMultipleSelectionDuringEditing"] && [value integerValue] != 0)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"allowsSelection"])
+    else if ([item isEqualToString:@"allowsSelection"] && [value integerValue] != 1)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"allowsSelectionDuringEditing"])
+    else if ([item isEqualToString:@"allowsSelectionDuringEditing"] && [value integerValue] != 0)
     {
         [output setObject:[value booleanString] forKey:item];
     }

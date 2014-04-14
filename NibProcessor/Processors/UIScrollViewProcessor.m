@@ -27,55 +27,55 @@
     {
         [output setObject:[value scrollViewIndicatorStyleString] forKey:item];
     }
-    else if ([item isEqualToString:@"showsHorizontalScrollIndicator"])
+    else if ([item isEqualToString:@"showsHorizontalScrollIndicator"] && [value integerValue] != 1)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"showsVerticalScrollIndicator"])
+    else if ([item isEqualToString:@"showsVerticalScrollIndicator"] && [value integerValue] != 1)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"scrollEnabled"])
+    else if ([item isEqualToString:@"scrollEnabled"] && [value integerValue] != 1)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"pagingEnabled"])
+    else if ([item isEqualToString:@"pagingEnabled"] && [value integerValue] != 0)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"directionalLockEnabled"])
+    else if ([item isEqualToString:@"directionalLockEnabled"] && [value integerValue] != 0)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"bounces"])
+    else if ([item isEqualToString:@"bounces"] && [value integerValue] != 1)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"alwaysBounceHorizontal"])
+    else if ([item isEqualToString:@"alwaysBounceHorizontal"] && [value integerValue] != 0)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"alwaysBounceVertical"])
+    else if ([item isEqualToString:@"alwaysBounceVertical"] && [value integerValue] != 0)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"maximumZoomScale"])
+    else if ([item isEqualToString:@"maximumZoomScale"] && [value floatValue] != 1.0)
     {
         [output setObject:[value floatString] forKey:item];
     }
-    else if ([item isEqualToString:@"minimumZoomScale"])
+    else if ([item isEqualToString:@"minimumZoomScale"] && [value floatValue] != 1.0)
     {
         [output setObject:[value floatString] forKey:item];
     }
-    else if ([item isEqualToString:@"bouncesZoom"])
+    else if ([item isEqualToString:@"bouncesZoom"] && [value integerValue] != 1)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"delaysContentTouches"])
+    else if ([item isEqualToString:@"delaysContentTouches"] && [value integerValue] != 1)
     {
         [output setObject:[value booleanString] forKey:item];
     }
-    else if ([item isEqualToString:@"canCancelContentTouches"])
+    else if ([item isEqualToString:@"canCancelContentTouches"] && [value integerValue] != 1)
     {
         [output setObject:[value booleanString] forKey:item];
     }
