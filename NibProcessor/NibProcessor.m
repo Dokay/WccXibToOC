@@ -25,9 +25,9 @@
     
     NSDictionary *_dicObjectsConnects;
     
-    NSMutableArray *_arrBtnsWithState;
+    NSMutableArray *_arrPropertiesFromXml;
     
-    NSMutableDictionary *_dicBtnWithStateProperty;
+    NSMutableDictionary *_dicPropertyWithXml;
     
     BOOL _bBtnBegin;
 }
@@ -125,10 +125,11 @@
             if ([imageLine rangeOfString:@"<state "].location != NSNotFound) {
 //                NSLog(@"state not peocess :%@\n",imageLine);
                 
-                [self praseXml];
+//                [self praseXml];
             }
         }
     }
+    [self praseXml];
     [task release];
 
 }
@@ -284,8 +285,8 @@
         }
         
         //处理state，例如Button的
-        if([_arrBtnsWithState count] > 0){
-            for(NSDictionary *dic in _arrBtnsWithState){
+        if([_arrPropertiesFromXml count] > 0){
+            for(NSDictionary *dic in _arrPropertiesFromXml){
                 NSDictionary *dicValue = [dic valueForKey:@"button"];
                 if ([[dicValue valueForKey:@"id"] isEqualToString:identifier]) {
                     NSDictionary *stateValue = [dic valueForKey:@"state"];
@@ -309,6 +310,21 @@
                     NSString *titleText = [stateValue valueForKey:@"title"];
                     if ([titleText length] > 0) {
                        [_output appendFormat:@"  [%@ setTitle:@\"%@\" forState:UIControlState%@%@];\n", instanceName, titleText,stateNameFirstCharaxterLeft,stateNameFirstCharaxterRight];
+                    }
+                }
+            }
+        }
+        
+        //处理label的Font
+        if([_arrPropertiesFromXml count] > 0){
+            for(NSDictionary *dic in _arrPropertiesFromXml){
+                NSDictionary *dicValue = [dic valueForKey:@"label"];
+                if ([[dicValue valueForKey:@"id"] isEqualToString:identifier]) {
+                    NSDictionary *stateValue = [dic valueForKey:@"fontDescription"];
+//                      Labelnptmjdhq.font = [UIFont fontWithSize:12 bold:NO];
+                    NSString *titleText = [stateValue valueForKey:@"pointSize"];
+                    if ([titleText length] > 0) {
+                        [_output appendFormat:@"  %@.font = [UIFont fontWithSize:%@ bold:NO];\n", instanceName, titleText];
                     }
                 }
             }
@@ -526,19 +542,19 @@
     
     
     
-    if ([elementName isEqualToString:@"button"]) {
+    if ([elementName isEqualToString:@"button"] || [elementName isEqualToString:@"label"]) {
         _bBtnBegin = YES;
 
     }
     if (_bBtnBegin == YES) {
-        if (_dicBtnWithStateProperty == nil) {
-            _dicBtnWithStateProperty = [[NSMutableDictionary alloc]init];
+        if (_dicPropertyWithXml == nil) {
+            _dicPropertyWithXml = [[NSMutableDictionary alloc]init];
         }
         
-        if (_arrBtnsWithState == nil) {
-            _arrBtnsWithState = [[NSMutableArray alloc]init];
+        if (_arrPropertiesFromXml == nil) {
+            _arrPropertiesFromXml = [[NSMutableArray alloc]init];
         }
-        [_dicBtnWithStateProperty setObject:attributeDict forKey:elementName];
+        [_dicPropertyWithXml setObject:attributeDict forKey:elementName];
     }
 }
 
@@ -556,14 +572,27 @@
     if ([elementName isEqualToString:@"button"]) {
         _bBtnBegin = NO;
         
-        for(NSString *key in _dicBtnWithStateProperty)
+        for(NSString *key in _dicPropertyWithXml)
         {
             if ([key isEqualToString:@"state"]) {
-                NSDictionary *dic = [_dicBtnWithStateProperty copy];
-                [_arrBtnsWithState addObject:dic];
+                NSDictionary *dic = [_dicPropertyWithXml copy];
+                [_arrPropertiesFromXml addObject:dic];
             }
         }
-        _dicBtnWithStateProperty = nil;
+        _dicPropertyWithXml = nil;
+    }
+    
+    if ([elementName isEqualToString:@"label"]) {
+        _bBtnBegin = NO;
+        
+        for(NSString *key in _dicPropertyWithXml)
+        {
+            if ([key isEqualToString:@"fontDescription"]) {
+                NSDictionary *dic = [_dicPropertyWithXml copy];
+                [_arrPropertiesFromXml addObject:dic];
+            }
+        }
+        _dicPropertyWithXml = nil;
     }
 }
 

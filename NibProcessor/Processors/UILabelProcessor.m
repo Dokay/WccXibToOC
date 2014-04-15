@@ -25,6 +25,8 @@
 
 - (void)processKey:(id)item value:(id)value
 {
+    [self addDefaultValue];
+    
     if ([item isEqualToString:@"text"])
     {
         [output setObject:[value quotedAsCodeString] forKey:item];
@@ -108,6 +110,12 @@
     {
         [super processKey:item value:value];
     }
+}
+
+- (void)addDefaultValue
+{
+    //若Xib文件制定了，这里的设置会被刷掉
+   [output setObject:@"[UIColor clearColor]" forKey:@"backgroundColor"];
 }
 
 @end
