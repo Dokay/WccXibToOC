@@ -329,56 +329,59 @@
                 }
             }
         }
+        [self processImage:identifier :instanceName :@"<imageView "];
+        
+         [self processImage:identifier :instanceName :@"<barButtonItem "];
         
         //处理Xib中的图片,UIImageView
-        if ([_arrImagesLine count] > 0) {
-            for(NSString *imageLine in _arrImagesLine)
-            {
-                if ([imageLine rangeOfString:@"<imageView "].location != NSNotFound) {
-                    NSRange range = [imageLine rangeOfString:@"<imageView "];
-                    imageLine = [imageLine substringFromIndex:range.location];//去除前面空格；
+//        if ([_arrImagesLine count] > 0) {
+//            for(NSString *imageLine in _arrImagesLine)
+//            {
+//                if ([imageLine rangeOfString:@"<imageView "].location != NSNotFound) {
+//                    NSRange range = [imageLine rangeOfString:@"<imageView "];
+//                    imageLine = [imageLine substringFromIndex:range.location];//去除前面空格；
+////
+//                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@"<imageView " withString:@"{\""];
+//                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@">" withString:@"}"];
+//                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@" " withString:@",\""];
+//                     imageLine = [imageLine stringByReplacingOccurrencesOfString:@"=" withString:@"\":"];
+////                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@"<imageView," withString:@"\"imageView\" = {"];
+//                    NSData *dataStr = [imageLine dataUsingEncoding:NSUTF8StringEncoding];
+//                    NSDictionary *dicImageView = [NSJSONSerialization JSONObjectWithData:dataStr options:NSJSONReadingAllowFragments error:nil];
+//                    
+//                    if (dicImageView != Nil && [[dicImageView valueForKey:@"id"] isEqualToString:identifier]) {
+//                        
+//                        for(NSString *dicKey in dicImageView)
+//                        {
+//                            NSString *imageName = [dicImageView valueForKey:dicKey];
 //
-                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@"<imageView " withString:@"{\""];
-                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@">" withString:@"}"];
-                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@" " withString:@",\""];
-                     imageLine = [imageLine stringByReplacingOccurrencesOfString:@"=" withString:@"\":"];
-//                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@"<imageView," withString:@"\"imageView\" = {"];
-                    NSData *dataStr = [imageLine dataUsingEncoding:NSUTF8StringEncoding];
-                    NSDictionary *dicImageView = [NSJSONSerialization JSONObjectWithData:dataStr options:NSJSONReadingAllowFragments error:nil];
-                    
-                    if (dicImageView != Nil && [[dicImageView valueForKey:@"id"] isEqualToString:identifier]) {
-                        
-                        for(NSString *dicKey in dicImageView)
-                        {
-                            NSString *imageName = [dicImageView valueForKey:dicKey];
-
-                            if ([imageName length] > 0 && [imageName rangeOfString:@".png"].location != NSNotFound) {
-                                imageName = [imageName stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
-                                imageName = [imageName stringByReplacingOccurrencesOfString:@".png" withString:@""];
-                                NSString *uiImage = [NSString stringWithFormat:@"[UIImage imageNamed:@\"%@\"]",imageName];
-                                switch (self.codeStyle)
-                                {
-                                    case NibProcessorCodeStyleProperties:
-//                                        [UIImage imageNamed:@"a.png"];
-                                        
-                                        [_output appendFormat:@"  %@.%@ = %@;\n", instanceName, dicKey, uiImage];
-                                        break;
-                                        
-                                    case NibProcessorCodeStyleSetter:
-                                        
-//                                        [_output appendFormat:@"  [%@ set%@:%@];\n", instanceName, key, value];
-                                     [_output appendFormat:@"  %@.%@ = %@;\n", instanceName, dicKey, uiImage];
-                                        break;
-                                        
-                                    default:
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+//                            if ([imageName length] > 0 && [imageName rangeOfString:@".png"].location != NSNotFound) {
+//                                imageName = [imageName stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
+//                                imageName = [imageName stringByReplacingOccurrencesOfString:@".png" withString:@""];
+//                                NSString *uiImage = [NSString stringWithFormat:@"[UIImage imageNamed:@\"%@\"]",imageName];
+//                                switch (self.codeStyle)
+//                                {
+//                                    case NibProcessorCodeStyleProperties:
+////                                        [UIImage imageNamed:@"a.png"];
+//                                        
+//                                        [_output appendFormat:@"  %@.%@ = %@;\n", instanceName, dicKey, uiImage];
+//                                        break;
+//                                        
+//                                    case NibProcessorCodeStyleSetter:
+//                                        
+////                                        [_output appendFormat:@"  [%@ set%@:%@];\n", instanceName, key, value];
+//                                     [_output appendFormat:@"  %@.%@ = %@;\n", instanceName, dicKey, uiImage];
+//                                        break;
+//                                        
+//                                    default:
+//                                        break;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
        
         
         if ([self hasOutletName:identifier]) {
@@ -518,6 +521,60 @@
         
     }
     return @"error";
+}
+
+#pragma --mark 处理Xib中的图片,UIImageView,barButtonItem
+- (void)processImage:(NSString *)identifier :(NSString *)instanceName :(NSString *)keyStart
+{
+    if ([_arrImagesLine count] > 0) {
+        for(NSString *imageLine in _arrImagesLine)
+        {
+            if ([imageLine rangeOfString:keyStart].location != NSNotFound) {
+                NSRange range = [imageLine rangeOfString:keyStart];
+                imageLine = [imageLine substringFromIndex:range.location];//去除前面空格；
+                //
+                imageLine = [imageLine stringByReplacingOccurrencesOfString:keyStart withString:@"{\""];
+                imageLine = [imageLine stringByReplacingOccurrencesOfString:@">" withString:@"}"];
+                imageLine = [imageLine stringByReplacingOccurrencesOfString:@" " withString:@",\""];
+                imageLine = [imageLine stringByReplacingOccurrencesOfString:@"=" withString:@"\":"];
+                //                    imageLine = [imageLine stringByReplacingOccurrencesOfString:@"<imageView," withString:@"\"imageView\" = {"];
+                NSData *dataStr = [imageLine dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *dicImageView = [NSJSONSerialization JSONObjectWithData:dataStr options:NSJSONReadingAllowFragments error:nil];
+                
+                if (dicImageView != Nil && [[dicImageView valueForKey:@"id"] isEqualToString:identifier]) {
+                    
+                    for(NSString *dicKey in dicImageView)
+                    {
+                        NSString *imageName = [dicImageView valueForKey:dicKey];
+                        
+                        if ([imageName length] > 0 && [imageName rangeOfString:@".png"].location != NSNotFound) {
+                            imageName = [imageName stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
+                            imageName = [imageName stringByReplacingOccurrencesOfString:@".png" withString:@""];
+                            NSString *uiImage = [NSString stringWithFormat:@"[UIImage imageNamed:@\"%@\"]",imageName];
+                            switch (self.codeStyle)
+                            {
+                                case NibProcessorCodeStyleProperties:
+                                    //                                        [UIImage imageNamed:@"a.png"];
+                                    
+                                    [_output appendFormat:@"  %@.%@ = %@;\n", instanceName, dicKey, uiImage];
+                                    break;
+                                    
+                                case NibProcessorCodeStyleSetter:
+                                    
+                                    //                                        [_output appendFormat:@"  [%@ set%@:%@];\n", instanceName, key, value];
+                                    [_output appendFormat:@"  %@.%@ = %@;\n", instanceName, dicKey, uiImage];
+                                    break;
+                                    
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 

@@ -327,6 +327,10 @@
 
 - (NSString *)barButtonSystemItemString
 {
+    if(self == nil)
+    {
+        return @"UIBarButtonSystemItemFlexibleSpace";
+    }
     NSArray *values = [NSArray arrayWithObjects:@"UIBarButtonSystemItemDone",
                        @"UIBarButtonSystemItemCancel",
                        @"UIBarButtonSystemItemEdit",
