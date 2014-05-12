@@ -205,7 +205,7 @@
     for (NSString *identifier in objects)
     {
         id object = [objects objectForKey:identifier];
-        NSString *identifierKey = [[identifier stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
+//        NSString *identifierKey = [[identifier stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
         
         // First, output any helper functions, ordered alphabetically
         NSArray *orderedKeys = [object keysSortedByValueUsingSelector:@selector(caseInsensitiveCompare:)];
@@ -226,7 +226,7 @@
         NSString *constructor = [object objectForKey:@"constructor"];
         
         if ([custom_klass length] > 0) {
-            constructor = [constructor stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"[[%@",klass] withString:[NSString stringWithFormat:@"[[%@",custom_klass]];
+            constructor = [constructor stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"[%@",klass] withString:[NSString stringWithFormat:@"[%@",custom_klass]];
             [_output appendFormat:@"  %@ *%@ = %@;\n",custom_klass, instanceName, constructor];
         }else{
             [_output appendFormat:@"  %@ *%@ = %@;\n",klass, instanceName, constructor];
@@ -289,28 +289,36 @@
             for(NSDictionary *dic in _arrPropertiesFromXml){
                 NSDictionary *dicValue = [dic valueForKey:@"button"];
                 if ([[dicValue valueForKey:@"id"] isEqualToString:identifier]) {
-                    NSDictionary *stateValue = [dic valueForKey:@"state"];
-                    NSString *stateName = [stateValue valueForKey:@"key"];
                     
-                    NSString *stateNameFirstCharaxterRight = [stateName substringFromIndex:1];
-                    NSString *stateNameFirstCharaxterLeft = [[stateName substringToIndex:1] uppercaseString];
-                    
-                    NSString *imageName = [stateValue valueForKey:@"image"];
-                    if ([imageName length] > 0){
-                        // [butt setImage: [UIImage imageNamed:@"selectedImage.png"] forState:UIControlStateNormal];
-                        //        UIControlStateNormal       = 0,         常规状态显现
-                        //        UIControlStateHighlighted  = 1 << 0,    高亮状态显现
-                        //        UIControlStateDisabled     = 1 << 1,    禁用的状态才会显现
-                        //        UIControlStateSelected     = 1 << 2,    选中状态
-                        imageName = [imageName stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
-                        imageName = [imageName stringByReplacingOccurrencesOfString:@".png" withString:@""];
-                        [_output appendFormat:@"  [%@ setImage: [UIImage imageNamed:@\"%@\"] forState:UIControlState%@%@];\n", instanceName, imageName,stateNameFirstCharaxterLeft,stateNameFirstCharaxterRight];
+                    for(NSString *dicKey in dic)
+                    {
+                        if ([dicKey hasPrefix:@"state-"]) {
+                            NSDictionary *stateValue = [dic valueForKey:dicKey];
+                            NSString *stateName = [stateValue valueForKey:@"key"];
+                            
+                            NSString *stateNameFirstCharaxterRight = [stateName substringFromIndex:1];
+                            NSString *stateNameFirstCharaxterLeft = [[stateName substringToIndex:1] uppercaseString];
+                            
+                            NSString *imageName = [stateValue valueForKey:@"image"];
+                            if ([imageName length] > 0){
+                                // [butt setImage: [UIImage imageNamed:@"selectedImage.png"] forState:UIControlStateNormal];
+                                //        UIControlStateNormal       = 0,         常规状态显现
+                                //        UIControlStateHighlighted  = 1 << 0,    高亮状态显现
+                                //        UIControlStateDisabled     = 1 << 1,    禁用的状态才会显现
+                                //        UIControlStateSelected     = 1 << 2,    选中状态
+                                imageName = [imageName stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
+                                imageName = [imageName stringByReplacingOccurrencesOfString:@".png" withString:@""];
+                                [_output appendFormat:@"  [%@ setImage: [UIImage imageNamed:@\"%@\"] forState:UIControlState%@%@];\n", instanceName, imageName,stateNameFirstCharaxterLeft,stateNameFirstCharaxterRight];
+                            }
+                            
+                            NSString *titleText = [stateValue valueForKey:@"title"];
+                            if ([titleText length] > 0) {
+                                [_output appendFormat:@"  [%@ setTitle:@\"%@\" forState:UIControlState%@%@];\n", instanceName, titleText,stateNameFirstCharaxterLeft,stateNameFirstCharaxterRight];
+                            }
+
+                        }
                     }
                     
-                    NSString *titleText = [stateValue valueForKey:@"title"];
-                    if ([titleText length] > 0) {
-                       [_output appendFormat:@"  [%@ setTitle:@\"%@\" forState:UIControlState%@%@];\n", instanceName, titleText,stateNameFirstCharaxterLeft,stateNameFirstCharaxterRight];
-                    }
                 }
             }
         }
@@ -397,7 +405,8 @@
             id value = [object objectForKey:key];
             if ([key hasPrefix:@"__method__"])
             {
-                [_output appendFormat:@"  [%@%@ %@];\n", instanceName, identifierKey, value];
+//                [_output appendFormat:@"  [%@%@ %@];\n", instanceName, identifierKey, value];
+                [_output appendFormat:@"  [%@ %@];\n", instanceName, value];
             }
         }
         [_output appendString:@"\n"];
@@ -611,7 +620,12 @@
         if (_arrPropertiesFromXml == nil) {
             _arrPropertiesFromXml = [[NSMutableArray alloc]init];
         }
-        [_dicPropertyWithXml setObject:attributeDict forKey:elementName];
+        if ([elementName isEqualToString:@"state"]) {
+            [_dicPropertyWithXml setObject:attributeDict forKey:[NSString stringWithFormat:@"%@-%@",elementName,[attributeDict valueForKey:@"key"]]];
+        }else{
+            [_dicPropertyWithXml setObject:attributeDict forKey:elementName];
+        }
+        
     }
 }
 
@@ -631,7 +645,7 @@
         
         for(NSString *key in _dicPropertyWithXml)
         {
-            if ([key isEqualToString:@"state"]) {
+            if ([key isEqualToString:@"button"]) {
                 NSDictionary *dic = [_dicPropertyWithXml copy];
                 [_arrPropertiesFromXml addObject:dic];
             }
