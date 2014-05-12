@@ -69,6 +69,12 @@
     {
         [color appendString:@"[UIColor colorWithNumber:9]"];
     }
+    else if ([self hasPrefix:@"NSDeviceRGBColorSpace "])
+    {
+        float red, green, blue, alpha;
+        sscanf([self UTF8String], "NSDeviceRGBColorSpace %f %f %f %f", &red, &green, &blue, &alpha);
+        [color appendFormat:@"[UIColor colorWithRed:%f green:%f blue:%f alpha:%f]", red, green, blue, alpha];
+    }
     else
     {
         [color appendString:self];
